@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../config';
 
 const Dashboard = () => {
+  const audioRef = useRef(null);
+  const [showPlayButton, setShowPlayButton] = useState(false);
+  const [litUp, setLitUp] = useState(false);
+  const [overlayGone, setOverlayGone] = useState(false);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -17,6 +22,13 @@ const Dashboard = () => {
     fetchMessages();
     // eslint-disable-next-line
   }, []);
+
+  // Show play button after lighting up for birthdaygirl
+  useEffect(() => {
+    if (role === 'birthdaygirl' && litUp) {
+      setShowPlayButton(true);
+    }
+  }, [litUp, role]);
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -56,9 +68,35 @@ const Dashboard = () => {
         <img src="https://pngimg.com/uploads/balloon/balloon_PNG4954.png" className="animated-bg-balloon" style={{left: '70vw'}} alt="balloon" />
         <img src="https://pngimg.com/uploads/balloon/balloon_PNG4955.png" className="animated-bg-balloon" style={{left: '90vw'}} alt="balloon" />
       </div>
-      <div className="dashboard-container">
+      <div className={`dashboard-container${role === 'birthdaygirl' && !overlayGone ? ' dimmed' : ''}`}>
         {role === 'birthdaygirl' && (
           <>
+            {/* Overlay for lighting up the page */}
+            {!litUp && !overlayGone && (
+              <div className="lightup-overlay">
+                <button
+                  className="lightup-btn"
+                  onClick={() => {
+                    setLitUp(true);
+                    setTimeout(() => setOverlayGone(true), 1800); // match CSS transition duration
+                  }}
+                >
+                  ✨ Light up the page! ✨
+                </button>
+              </div>
+            )}
+            <audio ref={audioRef} src="/welcome.mp3" style={{ display: 'none' }} />
+            {showPlayButton && litUp && (
+              <button onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.currentTime = 0;
+                  audioRef.current.play();
+                  setShowPlayButton(false);
+                }
+              }} style={{margin: '16px 0', padding: '8px 16px', fontWeight: 'bold', fontSize: '1.1em', borderRadius: '8px', background: '#ffb347', border: 'none', cursor: 'pointer'}}>
+                ▶️ Play Welcome Song
+              </button>
+            )}
             <div className="dashboard-welcome">
               <h1 className="dashboard-birthday-title">🎉 Happy Birthday Vinitha! 🎉</h1>
               <p className="dashboard-birthday-subtext">Here are your lovely wishes…</p>
@@ -76,7 +114,7 @@ const Dashboard = () => {
           </>
         )}
         <div className="dashboard-header">
-          <h2>Dashboard <span className="dashboard-role">({role === 'admin' ? 'Admin' : 'Birthday Girl'})</span></h2>
+          <h2>V I N I T H A <span className="dashboard-role">{role === 'admin' ? 'Admin' : 'HAPPY BORN DAY'}</span></h2>
           <button className="dashboard-logout" onClick={handleLogout}>Logout</button>
         </div>
         {loading ? <div className="dashboard-loading">Loading...</div> : (
@@ -86,7 +124,7 @@ const Dashboard = () => {
               <div key={msg._id} className="dashboard-message-card dashboard-animate-in" style={{ animationDelay: `${0.1 * idx}s` }}>
                 <div className="dashboard-message-header">
                   <div>
-                    <b>{msg.name}</b> <span className="dashboard-relationship">({msg.relationship})</span>
+                    <b style={{fontSize: '3em'}}>{msg.name}</b> <span className="dashboard-relationship">({msg.relationship})</span>
                   </div>
                   <div className="dashboard-message-time">
                     <span>{msg.timeOfDay}</span>

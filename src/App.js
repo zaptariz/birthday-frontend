@@ -118,7 +118,7 @@ function App() {
             <>
               <div className="animated-bg-confetti"></div>
               <div className="animated-bg">
-                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4951.png" className="animated-bg-balloon" style={{left: '10vw'}} alt="balloon" />
+                {/* <img src="https://pngimg.com/uploads/balloon/balloon_PNG4951.png" className="animated-bg-balloon" style={{left: '10vw'}} alt="balloon" /> */}
                 <img src="https://pngimg.com/uploads/balloon/balloon_PNG4952.png" className="animated-bg-balloon" style={{left: '30vw'}} alt="balloon" />
                 <img src="https://pngimg.com/uploads/balloon/balloon_PNG4953.png" className="animated-bg-balloon" style={{left: '50vw'}} alt="balloon" />
                 <img src="https://pngimg.com/uploads/balloon/balloon_PNG4954.png" className="animated-bg-balloon" style={{left: '70vw'}} alt="balloon" />
@@ -162,7 +162,7 @@ function App() {
                     </div>
                     <div style={{position: 'relative', zIndex: 1}}>
                       <FaBirthdayCake className="icon" />
-                      <h1>Happy Birthday Vinitha !</h1>
+                      <h1>Its Vinitha's Birthday </h1>
                       <FaHeart className="icon" />
                     </div>
                   </div>
@@ -219,19 +219,19 @@ function App() {
                           className="message-card"
                         >
                           <div className="message-header">
-                            <h3>
+                            <h3 style={{fontSize: '2em'}}>
                               {getRelationshipEmoji(msg.relationship)} {msg.name}
-                              <span className="relationship-tag">{msg.relationship}</span>
+                              <span className="relationship-tag" style={{fontSize: '.6em', marginLeft: 6, backgroundColor: 'skyblue', color: 'black' }}>{msg.relationship}</span>
                             </h3>
                             <div className="message-time">
-                              <FaClock className="time-icon" />
-                              <span style={{ marginLeft: 6 }}>{msg.timeOfDay}</span>
+                              <FaClock  />
+                              <span style={{ marginLeft: 6, fontSize: '0.95em' }}>{msg.timeOfDay}</span>
                               <span style={{ marginLeft: 12, color: '#888', fontSize: '0.95em' }}>
                                 {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </div>
                           </div>
-                          <p>{msg.message}</p>
+                          <p style={{fontSize: '1.2em', lineHeight: '1.5', fontWeight: 'bold'}}>{msg.message}</p>
                         </motion.div>
                       ))}
                     </AnimatePresence>
