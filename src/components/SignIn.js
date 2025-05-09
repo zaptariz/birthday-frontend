@@ -44,10 +44,10 @@ const SignIn = () => {
         <button type="submit">Sign In</button>
         {error && <div className="error">{error}</div>}
       </form>
-      <div style={{marginTop: '1rem', fontSize: '0.9em', color: '#888'}}>
+      {/* <div style={{marginTop: '1rem', fontSize: '0.9em', color: '#888'}}>
         <div><b>Birthday Girl:</b> birthdaygirl / happybday</div>
         <div><b>Admin:</b> admin / adminpass</div>
-      </div>
+      </div> */}
     </div>
   );
 };
