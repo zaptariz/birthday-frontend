@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaMusic, FaPlay, FaPause } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'; // Only keep motion if it is used below
 
 const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);

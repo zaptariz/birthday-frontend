@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { motion, AnimatePresence } from 'framer-motion';
-import Confetti from 'react-confetti';
 import { FaBirthdayCake, FaHeart, FaClock } from 'react-icons/fa';
 import axios from 'axios';
 import MusicPlayer from './components/MusicPlayer';
@@ -41,7 +40,6 @@ const relationships = [
 ];
 
 function App() {
-  const [showConfetti, setShowConfetti] = useState(true);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ 
     name: '', 
@@ -51,8 +49,6 @@ function App() {
 
   useEffect(() => {
     fetchMessages();
-    const timer = setTimeout(() => setShowConfetti(false), 10000);
-    return () => clearTimeout(timer);
   }, []);
 
   const fetchMessages = async () => {

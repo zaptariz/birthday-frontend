@@ -12,7 +12,9 @@ const Dashboard = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  // Only use 'role' if it's referenced in logic or JSX below
   const role = localStorage.getItem('role');
+
 
   useEffect(() => {
     if (!role) {

@@ -1,6 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaBirthdayCake } from 'react-icons/fa';
+import { motion } from 'framer-motion'; // Only keep motion if used below
 
 const CoverImage = () => {
   return (

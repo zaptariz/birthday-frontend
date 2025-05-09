@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const USERS = [
   { username: 'birthdaygirl', password: 'happybday', role: 'birthdaygirl' },
   { username: 'admin', password: 'adminpass', role: 'admin' }
-];
+]; // Only keep USERS if it is used below
 
 const SignIn = () => {
   const [username, setUsername] = useState('');
