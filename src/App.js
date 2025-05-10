@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBirthdayCake, FaHeart, FaClock } from 'react-icons/fa';
 import axios from 'axios';
-import MusicPlayer from './components/MusicPlayer';
 import CoverImage from './components/CoverImage';
 import { API_URL } from './config';
 import './App.css';
+import InvitationModal from './components/InvitationModal';
+import './components/InvitationCard.css';
+import './components/InvitationModal.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SignIn from './components/SignIn';
 import Dashboard from './components/Dashboard';
@@ -34,18 +37,22 @@ const relationships = [
   'Friend',
   'Sister',
   'Brother',
+  'Cousin',
+  'Mama',
   // 'Best Friend',
   'Colleague',
   'Other'
 ];
 
 function App() {
+  const [invitationOpen, setInvitationOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState({ 
-    name: '', 
-    relationship: '', 
-    message: '' 
+  const [newMessage, setNewMessage] = useState({
+    name: '',
+    relationship: '',
+    message: ''
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchMessages();
@@ -62,11 +69,12 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const currentTime = new Date();
       const hours = currentTime.getHours();
       let timeOfDay;
-      
+
       if (hours >= 5 && hours < 12) {
         timeOfDay = 'Morning';
       } else if (hours >= 12 && hours < 17) {
@@ -86,9 +94,53 @@ function App() {
       await axios.post(`${API_URL}/api/messages`, messageWithTime);
       setNewMessage({ name: '', relationship: '', message: '' });
       fetchMessages();
+      Swal.fire({
+        title: '🎉 Wish Sent! 🎂',
+        html: '<b>Your wish has been sent.<br>Thank you for making her day special!<br>🥳🎈🎁</b>',
+        background: 'linear-gradient(135deg, #fffbe7 0%, #ffe3ed 100%)',
+        color: '#f50057',
+        showConfirmButton: false,
+        timer: 3000,
+        width: 400,
+        padding: '2.5em',
+        customClass: {
+          popup: 'swal2-birthday-popup',
+          title: 'swal2-birthday-title',
+        },
+      }).then(() => {
+        setNewMessage({ name: '', relationship: '', message: '' });
+        fetchMessages();
+        setTimeout(() => setInvitationOpen(true), 300); // open modal after a short delay
+      });
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        Swal.fire({
+          title: '💖 Only One Wish!',
+          html: '<b>You already wished her!<br>Only one wish allowed per person.<br>Thank you for your love! 💝</b>',
+          background: 'linear-gradient(135deg, #e7faff 0%, #fffbe7 100%)',
+          color: '#4fd1c5',
+          showConfirmButton: true,
+          confirmButtonColor: '#f50057',
+          confirmButtonText: 'Aww Okay!',
+          width: 400,
+          padding: '2.5em',
+          customClass: {
+            popup: 'swal2-birthday-popup',
+            title: 'swal2-birthday-title',
+          },
+        }).then(() => {
+          setNewMessage({ name: '', relationship: '', message: '' });
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong. Please try again later!'
+        });
+      }
       console.error('Error posting message:', error);
     }
+    setLoading(false);
   };
 
   const getRelationshipEmoji = (relationship) => {
@@ -97,6 +149,8 @@ function App() {
       'Friend': '👥',
       'Sister': '👭',
       'Brother': '👬',
+      'Cousin': '🧑‍🤝‍🧑',
+      'Mama': '🧑‍🦱',
       'Best Friend': '💖',
       'Colleague': '💼',
       'Other': '🌟'
@@ -105,7 +159,9 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
+      <InvitationModal open={invitationOpen} onClose={() => setInvitationOpen(false)} wisherName={newMessage.name} />
+      <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
         <Routes>
@@ -115,14 +171,14 @@ function App() {
               <div className="animated-bg-confetti"></div>
               <div className="animated-bg">
                 {/* <img src="https://pngimg.com/uploads/balloon/balloon_PNG4951.png" className="animated-bg-balloon" style={{left: '10vw'}} alt="balloon" /> */}
-                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4952.png" className="animated-bg-balloon" style={{left: '30vw'}} alt="balloon" />
-                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4953.png" className="animated-bg-balloon" style={{left: '50vw'}} alt="balloon" />
-                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4954.png" className="animated-bg-balloon" style={{left: '70vw'}} alt="balloon" />
-                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4955.png" className="animated-bg-balloon" style={{left: '90vw'}} alt="balloon" />
+                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4952.png" className="animated-bg-balloon" style={{ left: '30vw' }} alt="balloon" />
+                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4953.png" className="animated-bg-balloon" style={{ left: '50vw' }} alt="balloon" />
+                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4954.png" className="animated-bg-balloon" style={{ left: '70vw' }} alt="balloon" />
+                <img src="https://pngimg.com/uploads/balloon/balloon_PNG4955.png" className="animated-bg-balloon" style={{ left: '90vw' }} alt="balloon" />
               </div>
               <div className="app-container">
                 <CoverImage />
-                
+
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -156,7 +212,7 @@ function App() {
                         </span>
                       ))}
                     </div>
-                    <div style={{position: 'relative', zIndex: 1}}>
+                    <div style={{ position: 'relative', zIndex: 1 }}>
                       <FaBirthdayCake className="icon" />
                       <h1>Its Vinitha's Birthday </h1>
                       <FaHeart className="icon" />
@@ -164,7 +220,7 @@ function App() {
                   </div>
                 </motion.div>
 
-                <MusicPlayer />
+                {/* <MusicPlayer /> */}
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -199,7 +255,9 @@ function App() {
                         onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
                         required
                       />
-                      <button type="submit">Send Wish</button>
+                      <button type="submit" disabled={loading}>
+                        {loading ? 'Sending...' : 'Send Wish'}
+                      </button>
                     </form>
                   </div>
 
@@ -215,19 +273,19 @@ function App() {
                           className="message-card"
                         >
                           <div className="message-header">
-                            <h3 style={{fontSize: '2em'}}>
+                            <h3 style={{ fontSize: '2em' }}>
                               {getRelationshipEmoji(msg.relationship)} {msg.name}
-                              <span className="relationship-tag" style={{fontSize: '.6em', marginLeft: 6, backgroundColor: 'skyblue', color: 'black' }}>{msg.relationship}</span>
+                              <span className="relationship-tag" style={{ fontSize: '.6em', marginLeft: 6, backgroundColor: 'skyblue', color: 'black' }}>{msg.relationship}</span>
                             </h3>
                             <div className="message-time">
-                              <FaClock  />
+                              <FaClock />
                               <span style={{ marginLeft: 6, fontSize: '0.95em' }}>{msg.timeOfDay}</span>
                               <span style={{ marginLeft: 12, color: '#888', fontSize: '0.95em' }}>
                                 {new Date(msg.createdAt).toLocaleDateString()} {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </span>
                             </div>
                           </div>
-                          <p style={{fontSize: '1.2em', lineHeight: '1.5', fontWeight: 'bold'}}>{msg.message}</p>
+                          <p style={{ fontSize: '1.2em', lineHeight: '1.5', fontWeight: 'bold' }}>{msg.message}</p>
                         </motion.div>
                       ))}
                     </AnimatePresence>
@@ -241,6 +299,7 @@ function App() {
         </Routes>
       </Router>
     </ThemeProvider>
+    </>
   );
 }
 

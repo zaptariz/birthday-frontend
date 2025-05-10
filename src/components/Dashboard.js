@@ -6,7 +6,7 @@ import { API_URL } from '../config';
 
 const Dashboard = () => {
   const audioRef = useRef(null);
-  const [showPlayButton, setShowPlayButton] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [litUp, setLitUp] = useState(false);
   const [overlayGone, setOverlayGone] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -24,13 +24,6 @@ const Dashboard = () => {
     fetchMessages();
     // eslint-disable-next-line
   }, []);
-
-  // Show play button after lighting up for birthdaygirl
-  useEffect(() => {
-    if (role === 'birthdaygirl' && litUp) {
-      setShowPlayButton(true);
-    }
-  }, [litUp, role]);
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -78,25 +71,49 @@ const Dashboard = () => {
               <div className="lightup-overlay">
                 <button
                   className="lightup-btn"
-                  onClick={() => {
+                  onClick={async () => {
                     setLitUp(true);
                     setTimeout(() => setOverlayGone(true), 1800); // match CSS transition duration
+                    // Try to autoplay audio
+                    if (audioRef.current) {
+                      audioRef.current.currentTime = 0;
+                      try {
+                        await audioRef.current.play();
+                        setIsPlaying(true);
+                      } catch (err) {
+                        // Autoplay blocked, show play button
+                        setIsPlaying(false);
+                      }
+                    }
                   }}
                 >
                   ✨ Light up the page! ✨
                 </button>
               </div>
             )}
-            <audio ref={audioRef} src="/welcome.mp3" style={{ display: 'none' }} />
-            {showPlayButton && litUp && (
-              <button onClick={() => {
-                if (audioRef.current) {
-                  audioRef.current.currentTime = 0;
-                  audioRef.current.play();
-                  setShowPlayButton(false);
-                }
-              }} style={{margin: '16px 0', padding: '8px 16px', fontWeight: 'bold', fontSize: '1.1em', borderRadius: '8px', background: '#ffb347', border: 'none', cursor: 'pointer'}}>
-                ▶️ Play Welcome Song
+            <audio
+              ref={audioRef}
+              src="/welcome.mp3"
+              style={{ display: 'none' }}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+            />
+            {litUp && (
+              <button
+                onClick={() => {
+                  if (audioRef.current) {
+                    if (isPlaying) {
+                      audioRef.current.pause();
+                      setIsPlaying(false);
+                    } else {
+                      audioRef.current.play();
+                      setIsPlaying(true);
+                    }
+                  }
+                }}
+                style={{margin: '16px 0', padding: '8px 16px', fontWeight: 'bold', fontSize: '1.1em', borderRadius: '8px', background: '#ffb347', border: 'none', cursor: 'pointer'}}
+              >
+                {isPlaying ? '⏸️ Pause Welcome Song' : '▶️ Play Welcome Song'}
               </button>
             )}
             <div className="dashboard-welcome">
@@ -116,7 +133,7 @@ const Dashboard = () => {
           </>
         )}
         <div className="dashboard-header">
-          <h2>V I N I T H A <span className="dashboard-role">{role === 'admin' ? 'Admin' : 'HAPPY BORN DAY'}</span></h2>
+          <h2>Vinitha<span className="dashboard-role">{role === 'admin' ? 'Admin' : 'ONCE AGAIN HAPPY BORN DAY DARLING'}</span></h2>
           <button className="dashboard-logout" onClick={handleLogout}>Logout</button>
         </div>
         {loading ? <div className="dashboard-loading">Loading...</div> : (
