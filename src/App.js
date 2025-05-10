@@ -261,7 +261,7 @@ function App() {
                     </form>
                   </div>
 
-                  <div className="messages">
+                  {/* <div className="messages">
                     <h2>Birthday Wishes</h2>
                     <AnimatePresence>
                       {messages.map((msg) => (
@@ -289,7 +289,7 @@ function App() {
                         </motion.div>
                       ))}
                     </AnimatePresence>
-                  </div>
+                  </div> */}
                 </motion.div>
               </div>
             </>
