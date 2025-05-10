@@ -110,7 +110,7 @@ function App() {
       }).then(() => {
         setNewMessage({ name: '', relationship: '', message: '' });
         fetchMessages();
-        setTimeout(() => setInvitationOpen(true), 300); // open modal after a short delay
+        // setTimeout(() => setInvitationOpen(true), 300); // open modal after a short delay
       });
     } catch (error) {
       if (error.response && error.response.status === 409) {
